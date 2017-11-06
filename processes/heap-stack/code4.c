@@ -34,7 +34,7 @@ back:
 
 	printf("\n\n /proc/%d/maps \n\n", pid);
 	char command[50];
-	sprintf(command, "cat proc/%d/maps", pid);
+	sprintf(command, "cat /proc/%d/maps", pid);
 	system(command);
 
 	return 0;
