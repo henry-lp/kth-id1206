@@ -6,3 +6,7 @@
 
 # Unignore all dirs
 !*/
+
+
+# Ignore build direcotry
+**/build/
