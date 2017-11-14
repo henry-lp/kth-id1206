@@ -30,7 +30,7 @@
 
 ## Project An Operating System in Rust
 
-- [ ] A minimal x86 kernel
+- [x] A minimal x86 kernel
 - [ ] Set up Rust
 - [ ] Virtual memory
 - [ ] A kernel heap
