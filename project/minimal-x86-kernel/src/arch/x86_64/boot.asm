@@ -4,7 +4,7 @@ extern long_mode_start
 section .text
 bits 32
 start:
-	mov esp, stack_top
+	mov esp, stack_top			; move stack pointer to point to top of stack
 
 	call check_multiboot
 	call check_cpuid
@@ -22,7 +22,7 @@ start:
 	mov dword [0xb8000], 0x2f4b2f4f
 	hlt
 
-check_multiboot:
+check_multiboot:				; check if the magic number is correct
 	cmp eax, 0x36d76289
 	jne .no_multiboot
 	ret
