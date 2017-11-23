@@ -1,6 +1,8 @@
 arch ?= x86_64
 kernel := build/kernel-$(arch).bin
 iso := build/os-$(arch).iso
+target ?= $(arch)-blog_os
+rust_os := target/$(target)/debug/libblog_os.a
 
 linker_script := src/arch/$(arch)/linker.ld
 grub_cfg := src/arch/$(arch)/grub.cfg
@@ -28,7 +30,11 @@ $(iso): $(kernel) $(grub_cfg)
 	@rm -r build/isofiles
 
 $(kernel): $(assembly_object_files) $(linker_script)
-	@ld -n -T $(linker_script) -o $(kernel) $(assembly_object_files)
+	 @ld -n -T $(linker_script) -o $(kernel) \
+        $(assembly_object_files) $(rust_os)
+
+kernel:
+    @xargo build --target $(target)
 
 # compile assembly files
 build/arch/$(arch)/%.o: src/arch/$(arch)/%.asm
