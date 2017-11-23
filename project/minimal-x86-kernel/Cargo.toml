@@ -5,3 +5,6 @@ author = "GaPhil"
 
 [lib]
 crate-type = ["staticlib"]
+
+[dependencies]
+rlibc = "1.0"
