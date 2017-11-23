@@ -1,5 +1,7 @@
 #![feature(lang_items)]
 #![no_std]
+#![feature(unique)]
+#![feature(const_fn)]
 
 extern crate rlibc;
 
@@ -26,6 +28,3 @@ pub extern fn rust_main() {
 #[lang = "panic_fmt"] #[no_mangle] pub extern fn panic_fmt() -> ! {loop{}}
 
 mod vga_buffer;
-
-#![feature(unique)]
-

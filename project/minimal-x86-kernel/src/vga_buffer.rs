@@ -58,15 +58,14 @@ impl Writer {
     fn new_line(&mut self) {/* TODO */}
 }
 
+#[derive(Debug, Clone, Copy)]
+struct ColorCode(u8);
 
 impl ColorCode {
     const fn new(foreground: Color, background: Color) -> ColorCode {
         ColorCode((background as u8) << 4 | (foreground as u8))
     }
 }
-
-#[derive(Debug, Clone, Copy)]
-struct ColorCode(u8);
 
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
