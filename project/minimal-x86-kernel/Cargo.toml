@@ -1,8 +1,7 @@
 [package]
 name = "mini_os"
 version = "0.1.0"
-authors = "GaPhil"
+author = "GaPhil"
 
 [lib]
-create-type = [static-lib]
-
+crate-type = ["staticlib"]
