@@ -15,16 +15,6 @@ extern crate spin;
 #[macro_use]
 mod vga_buffer;
 
-#[no_mangle]
-pub extern fn rust_main() {
-    // ATTENTION: we have a very small stack and no guard page
-    vga_buffer::clear_screen();
-    println!("Hello World{}", "!");
-
-    loop{}
-}
-
-
 #[derive(Debug, Clone, Copy)]
 #[allow(dead_code)]
 #[repr(u8)]
@@ -106,4 +96,14 @@ pub fn clear_screen() {
     for _ in 0..BUFFER_HEIGHT {
         println!("");
     }
+}
+
+
+#[no_mangle]
+pub extern fn rust_main() {
+    // ATTENTION: we have a very small stack and no guard page
+    vga_buffer::clear_screen();
+    println!("Hello World{}", "!");
+
+    loop{}
 }
