@@ -108,12 +108,3 @@ impl Writer {
 #[derive(Debug, Clone, Copy)]
 struct ColorCode(u8);
 
-pub fn print_something() {
-    let mut writer = Writer {
-        column_position: 0,
-        color_code: ColorCode::new(Color::LightGreen, Color::Black),
-        buffer: unsafe { Unique::new_unchecked(0xb8000 as *mut _) },
-    };
-
-    writer.write_byte(b'H');
-}
