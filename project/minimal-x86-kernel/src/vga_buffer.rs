@@ -6,6 +6,17 @@ pub struct Writer {
     buffer: Unique<Buffer>,
 }
 
+use core::fmt;
+
+impl fmt::Write for Writer {
+    fn write_str(&mut self, s: &str) -> fmt::Result {
+        for byte in s.bytes() {
+          self.write_byte(byte)
+        }
+        Ok(())
+    }
+}
+
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy)]
 #[repr(u8)]
@@ -51,11 +62,37 @@ impl Writer {
         }
     }
 
+	pub fn write_str(&mut self, s: &str) {
+ 	   	for byte in s.bytes() {
+    	self.write_byte(byte)
+    	}
+	}
+
     fn buffer(&mut self) -> &mut Buffer {
         unsafe{ self.buffer.as_mut() }
     }
 
-    fn new_line(&mut self) {/* TODO */}
+    fn new_line(&mut self) {
+        for row in 1..BUFFER_HEIGHT {
+            for col in 0..BUFFER_WIDTH {
+                let buffer = self.buffer();
+                let character = buffer.chars[row][col].read();
+                buffer.chars[row - 1][col].write(character);
+            }
+        }
+        self.clear_row(BUFFER_HEIGHT-1);
+        self.column_position = 0;
+    }
+
+    fn clear_row(&mut self, row: usize) {
+        let blank = ScreenChar {
+            ascii_character: b' ',
+            color_code: self.color_code,
+        };
+        for col in 0..BUFFER_WIDTH {
+            self.buffer().chars[row][col].write(blank);
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -77,10 +114,11 @@ struct ScreenChar {
 const BUFFER_HEIGHT: usize = 25;
 const BUFFER_WIDTH: usize = 80;
 
-struct Buffer {
-    chars: [[ScreenChar; BUFFER_WIDTH]; BUFFER_HEIGHT],
-}
+use volatile::Volatile;
 
+struct Buffer {
+    chars: [[Volatile<ScreenChar>; BUFFER_WIDTH]; BUFFER_HEIGHT],
+}
 
 pub fn print_something() {
     let mut writer = Writer {
@@ -90,4 +128,23 @@ pub fn print_something() {
     };
 
     writer.write_byte(b'H');
+    writer.write_str("ello! ");
+    write!(writer, "The numbers are {} and {}", 42, 1.0/3.0);
+
+}
+
+use spin::Mutex;
+
+pub static WRITER: Writer = Writer {
+    column_position: 0,
+    color_code: ColorCode::new(Color::LightGreen, Color::Black),
+    buffer: unsafe { Unique::new_unchecked(0xb8000 as *mut _) },
+};
+
+macro_rules! print {
+    ($($arg:tt)*) => ({
+        use core::fmt::Write;
+        let mut writer = $crate::vga_buffer::WRITER.lock();
+        writer.write_fmt(format_args!($($arg)*)).unwrap();
+    });
 }
