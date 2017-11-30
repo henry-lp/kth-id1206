@@ -1,7 +1,8 @@
 #![feature(lang_items)]
 #![no_std]
-#![feature(unique)]
-#![feature(const_fn)]
+
+#[lang = "eh_personality"] extern fn eh_personality() {}
+#[lang = "panic_fmt"] #[no_mangle] pub extern fn panic_fmt() -> ! {loop{}}
 
 extern crate rlibc;
 
@@ -23,8 +24,3 @@ pub extern fn rust_main() {
 
     loop{}
 }
-
-#[lang = "eh_personality"] extern fn eh_personality() {}
-#[lang = "panic_fmt"] #[no_mangle] pub extern fn panic_fmt() -> ! {loop{}}
-
-mod vga_buffer;
