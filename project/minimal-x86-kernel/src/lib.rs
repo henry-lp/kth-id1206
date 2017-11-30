@@ -9,10 +9,26 @@
 #[lang = "panic_fmt"] #[no_mangle] pub extern fn panic_fmt() -> ! {loop{}}
 
 extern crate rlibc;
-extern crate volatile;
-extern crate spin;
 
-#[macro_use]
+#[no_mangle]
+pub extern fn rust_main() {
+    // ATTENTION: we have a very small stack and no guard page
+
+    let hello = b"Hello World!";
+    let color_byte = 0x1f; // white foreground, blue background
+
+    let mut hello_colored = [color_byte; 24];
+    for (i, char_byte) in hello.into_iter().enumerate() {
+        hello_colored[i*2] = *char_byte;
+    }
+
+    // write `Hello World!` to the center of the VGA text buffer
+    let buffer_ptr = (0xb8000 + 1988) as *mut _;
+    unsafe { *buffer_ptr = hello_colored };
+
+    loop{}
+}
+
 mod vga_buffer;
 
 #[derive(Debug, Clone, Copy)]
@@ -92,18 +108,3 @@ impl Writer {
 #[derive(Debug, Clone, Copy)]
 struct ColorCode(u8);
 
-pub fn clear_screen() {
-    for _ in 0..BUFFER_HEIGHT {
-        println!("");
-    }
-}
-
-
-#[no_mangle]
-pub extern fn rust_main() {
-    // ATTENTION: we have a very small stack and no guard page
-    vga_buffer::clear_screen();
-    println!("Hello World{}", "!");
-
-    loop{}
-}

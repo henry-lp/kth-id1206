@@ -1,24 +1,22 @@
-use core::ptr::Unique;
+#![feature(lang_items)]
+#![no_std]
+#![feature(unique)]
+#![feature(const_unique_new)]
+#![feature(const_fn)]
 
-pub struct Writer {
-    column_position: usize,
-    color_code: ColorCode,
-    buffer: Unique<Buffer>,
-}
 
-use core::fmt;
+#[lang = "eh_personality"] extern fn eh_personality() {}
+#[lang = "panic_fmt"] #[no_mangle] pub extern fn panic_fmt() -> ! {loop{}}
 
-impl fmt::Write for Writer {
-    fn write_str(&mut self, s: &str) -> fmt::Result {
-        for byte in s.bytes() {
-          self.write_byte(byte)
-        }
-        Ok(())
-    }
-}
+extern crate rlibc;
+extern crate volatile;
+extern crate spin;
 
-#[allow(dead_code)]
+#[macro_use]
+mod vga_buffer;
+
 #[derive(Debug, Clone, Copy)]
+#[allow(dead_code)]
 #[repr(u8)]
 pub enum Color {
     Black      = 0,
@@ -37,6 +35,28 @@ pub enum Color {
     Pink       = 13,
     Yellow     = 14,
     White      = 15,
+}
+
+#[derive(Debug, Clone, Copy)]
+#[repr(C)]
+struct ScreenChar {
+    ascii_character: u8,
+    color_code: ColorCode,
+}
+
+const BUFFER_HEIGHT: usize = 25;
+const BUFFER_WIDTH: usize = 80;
+
+struct Buffer {
+    chars: [[ScreenChar; BUFFER_WIDTH]; BUFFER_HEIGHT],
+}
+
+use core::ptr::Unique;
+
+pub struct Writer {
+    column_position: usize,
+    color_code: ColorCode,
+    buffer: Unique<Buffer>,
 }
 
 
@@ -62,89 +82,28 @@ impl Writer {
         }
     }
 
-	pub fn write_str(&mut self, s: &str) {
- 	   	for byte in s.bytes() {
-    	self.write_byte(byte)
-    	}
-	}
-
     fn buffer(&mut self) -> &mut Buffer {
         unsafe{ self.buffer.as_mut() }
     }
 
-    fn new_line(&mut self) {
-        for row in 1..BUFFER_HEIGHT {
-            for col in 0..BUFFER_WIDTH {
-                let buffer = self.buffer();
-                let character = buffer.chars[row][col].read();
-                buffer.chars[row - 1][col].write(character);
-            }
-        }
-        self.clear_row(BUFFER_HEIGHT-1);
-        self.column_position = 0;
-    }
-
-    fn clear_row(&mut self, row: usize) {
-        let blank = ScreenChar {
-            ascii_character: b' ',
-            color_code: self.color_code,
-        };
-        for col in 0..BUFFER_WIDTH {
-            self.buffer().chars[row][col].write(blank);
-        }
-    }
+    fn new_line(&mut self) {/* TODO */}
 }
 
 #[derive(Debug, Clone, Copy)]
 struct ColorCode(u8);
 
-impl ColorCode {
-    const fn new(foreground: Color, background: Color) -> ColorCode {
-        ColorCode((background as u8) << 4 | (foreground as u8))
+pub fn clear_screen() {
+    for _ in 0..BUFFER_HEIGHT {
+        println!("");
     }
 }
 
-#[derive(Debug, Clone, Copy)]
-#[repr(C)]
-struct ScreenChar {
-    ascii_character: u8,
-    color_code: ColorCode,
-}
 
-const BUFFER_HEIGHT: usize = 25;
-const BUFFER_WIDTH: usize = 80;
+#[no_mangle]
+pub extern fn rust_main() {
+    // ATTENTION: we have a very small stack and no guard page
+    vga_buffer::clear_screen();
+    println!("Hello World{}", "!");
 
-use volatile::Volatile;
-
-struct Buffer {
-    chars: [[Volatile<ScreenChar>; BUFFER_WIDTH]; BUFFER_HEIGHT],
-}
-
-pub fn print_something() {
-    let mut writer = Writer {
-        column_position: 0,
-        color_code: ColorCode::new(Color::LightGreen, Color::Black),
-        buffer: unsafe { Unique::new_unchecked(0xb8000 as *mut _) },
-    };
-
-    writer.write_byte(b'H');
-    writer.write_str("ello! ");
-    write!(writer, "The numbers are {} and {}", 42, 1.0/3.0);
-
-}
-
-use spin::Mutex;
-
-pub static WRITER: Writer = Writer {
-    column_position: 0,
-    color_code: ColorCode::new(Color::LightGreen, Color::Black),
-    buffer: unsafe { Unique::new_unchecked(0xb8000 as *mut _) },
-};
-
-macro_rules! print {
-    ($($arg:tt)*) => ({
-        use core::fmt::Write;
-        let mut writer = $crate::vga_buffer::WRITER.lock();
-        writer.write_fmt(format_args!($($arg)*)).unwrap();
-    });
+    loop{}
 }
