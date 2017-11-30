@@ -8,6 +8,9 @@
 !*/
 
 
+# Unignore Makefile
+!*Makefile
+
 # Ignore build direcotry
 **/build/
 

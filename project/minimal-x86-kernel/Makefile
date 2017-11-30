@@ -12,6 +12,7 @@ assembly_object_files := $(patsubst src/arch/$(arch)/%.asm, \
 
 .PHONY: all clean run iso kernel
 
+
 all: $(kernel)
 
 clean:
@@ -34,6 +35,7 @@ $(kernel): kernel $(rust_os) $(assembly_object_files) $(linker_script)
 		$(assembly_object_files) $(rust_os)
 
 kernel:
+
 	@xargo build --target $(target)
 
 # compile assembly files
