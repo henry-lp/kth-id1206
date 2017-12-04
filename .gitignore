@@ -16,3 +16,15 @@
 
 # Include Makefile
 !Makefile
+
+# Ignore all in play-a-game direcotry
+processes/play-a-game
+
+# Unignore certain files in play-a-game directory
+!*processes/play-a-game/Makefile
+!*processes/play-a-game/hal.c
+!*processes/play-a-game/skynet/Makefile
+!*processes/play-a-game/skynet/skynet.c
+!*processes/play-a-game/joshua/Makefile
+!*processes/play-a-game/joshua/joshua.c
+!*processes/play-a-game/joshua/quote.c
