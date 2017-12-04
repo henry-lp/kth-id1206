@@ -14,9 +14,6 @@
 # Ignore build direcotry
 **/build/
 
-# Include Makefile
-!Makefile
-
 # Ignore all in play-a-game direcotry
 processes/play-a-game
 
