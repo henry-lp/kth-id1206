@@ -7,7 +7,7 @@
 - [x] The structure of a process: A heap, a stack, a bottle and a rack
 - [x] How to create a process:  Hello Dolly
 - [x] How signals can be trapped:  Don't do this at home
-- [ ] How to write a kernel module in 20 min: Want to play a game?
+- [x] How to write a kernel module in 20 min: Want to play a game?
 
 ### Virtual memory
 
