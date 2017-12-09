@@ -1,4 +1,4 @@
-# kth-id1206
+# ID1206 Operating Systems
 
 ## Assignments
 
