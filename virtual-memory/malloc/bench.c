@@ -1,9 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <math.h>
 
-#define ROUNDS 10
+#define ROUNDS 100
 #define LOOP 100000
+#define MAX 4000
+#define MIN 8
 
 int main() {
 
@@ -22,7 +25,7 @@ int main() {
 				return(1);
 			}
 			/* writing to the memory so we know it exists */
-			*memory = 123;
+//			*memory = 123;
 			free(memory);
 		}
 		current = sbrk(0);
@@ -33,4 +36,19 @@ int main() {
 	}
 
 	return 0;
+}
+
+
+int request() {
+
+	/* k is log(MAX/MIN) */
+	double k = log(((double) MAX) / MIN);
+
+	/* r is [0..k] */
+	double r  = ((double) (rand() % (int) (k * 10000))) / 10000;
+
+	/* size  is [0..MAX] */
+	int size = (int) ((double) MAX / exp(r));
+
+	return size;
 }
