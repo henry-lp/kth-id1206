@@ -11,7 +11,7 @@
 
 ### Virtual memory
 
-- [ ] User space memory management: My malloc: mylloc and mhysa
+- [x] User space memory management: My malloc: mylloc and mhysa
 - [ ] Using mmap() instead of sbrk(): My malloc using mmap()
 - [ ] The importance of the TLB:  How large is the TLB?
 - [ ] The kernels page management: Page frame reclaiming algorithms
