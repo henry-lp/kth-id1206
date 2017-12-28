@@ -57,8 +57,6 @@ int main() {
 			buffer[index] = memory;
 			/* writing to the memory so we know it exits */
 			*memory = 123;
-
-			free(memory);
 		}
 		current = sbrk(0);
 		int allocated = (int)((current - init) / 1024);
