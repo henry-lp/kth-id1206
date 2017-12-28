@@ -25,3 +25,6 @@ processes/play-a-game
 !*processes/play-a-game/joshua/Makefile
 !*processes/play-a-game/joshua/joshua.c
 !*processes/play-a-game/joshua/quote.c
+
+# Ignore all out files
+*.o
