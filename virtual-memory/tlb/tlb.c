@@ -4,15 +4,25 @@
 
 #define PAGES (16)
 #define REFS (1024*1024)
-#define PAGESIZE 64
+#define PAGESIZE (4*1024)
 
 int main(int argc, char *argv[]) {
 
 	char *memory = malloc((long) PAGESIZE * PAGES);
 
-	clock_t c_start, c_stop;
+	for(int p = 0; p < PAGES; p++) {
+		long ref = (long)p * PAGESIZE;
+		/* force the page to be allocated */
+		memory[ref] += 1;
+	}
 
-	printf("#pages\t proc\t sum\n");
+	printf("# TLB experiment\n");
+	printf("# page size = %d bytes\n", (PAGESIZE));
+	printf("# max pages = %d\n", (PAGES));
+	printf("# total number of references = %d Mi\n", (REFS / (1024*1024)));
+	printf("# pages\t proc\t sum\n");
+
+	clock_t c_start, c_stop;
 
 	for(int pages = 1; pages <= PAGES; pages += 1) {
 
@@ -25,8 +35,10 @@ int main(int argc, char *argv[]) {
 		for(int l = 0; l < loops; l++) {
 			for(int p = 0; p < pages; p++) {
 
-				// dummy operation
-				sum++;
+				// page reference used to increment the sum
+				long ref = (long)p * PAGESIZE;
+				sum += memory[ref];
+				// sum++;
 			}
 		}
 
