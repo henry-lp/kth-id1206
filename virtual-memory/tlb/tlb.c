@@ -4,7 +4,7 @@
 
 #define PAGES (16)
 #define REFS (1024*1024)
-#define PAGESIZE (4*1024)
+#define PAGESIZE (4 * 1024)
 
 int main(int argc, char *argv[]) {
 
