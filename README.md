@@ -14,7 +14,7 @@
 - [x] User space memory management: My malloc: mylloc and mhysa
 - [x] Using mmap() instead of sbrk(): My malloc using mmap()
 - [x] The importance of the TLB:  How large is the TLB?
-- [ ] The kernels page management: Page frame reclaiming algorithms
+- [x] The kernels page management: Page frame reclaiming algorithms
 
 ### Concurrency
 
