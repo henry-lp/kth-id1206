@@ -18,7 +18,7 @@
 
 ### Concurrency
 
-- [ ] Build you own threads library:  Threads - roll your own
+- [x] Build you own threads library:  Threads - roll your own
 - [ ] Why and how to implement locking: Take me for a spin
 - [ ] Process communication: Ping-pong and Echoes
 
