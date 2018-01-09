@@ -11,15 +11,28 @@
 typedef struct cell {
 	int val;
 	struct cell *next;
-pthread_mutex_t mutex;
+	int mutex;
 } cell;
 
-cell sentinel = {MAX, NULL, PTHREAD_MUTEX_INITIALIZER};
-cell dummy = {-1, &sentinel, PTHREAD_MUTEX_INITIALIZER};
+cell sentinel = {MAX, NULL, 0};
+cell dummy = {-1, &sentinel, 0};
 
 cell *global = &dummy;
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+
+int try(volatile int *mutex) {
+	return __sync_val_compare_and_swap(mutex, 0, 1);
+}
+
+void lock(volatile int *mutex) {
+	whil(try(mutex) != 0); // spin
+}
+
+void unlock(volatile int *mutex) {
+	*mutex = 0;
+}
 
 // takes a pointer to the list and a value that it will
 // either add or remove. We use two pointers to run through
@@ -29,13 +42,11 @@ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 // conflicts with other operations.
 void toggle(cell *lst, int r) {
 	cell *prev = lst;
-	pthread_mutex_lock(&prev -> mutex);
+	lock(mutex);
 	cell *this = prev -> next;
-	pthread_mutex_lock(&this -> mutex);
+	lock(mutex);
 
 	cell *removed = NULL;
-
-	pthread_mutex_lock(&mutex);
 
 	while(this -> val < r) {
 		pthread_mutex_unlock(&prev -> mutex);
@@ -56,8 +67,8 @@ void toggle(cell *lst, int r) {
 		new = NULL;
 	}
 
-	pthread_mutex_unlock(&mutex);
-	pthread_mutex_unlock(&mutex);
+	unlock(&mutex);
+	unlock(&mutex);
 	if(removed != NULL) {
 		free(removed);
 	}
