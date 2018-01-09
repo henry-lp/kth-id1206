@@ -18,8 +18,13 @@ int try(volatile int  *mutex) {
 
 // the lock procedure is changed to operate on a mutex and repeatedly
 // tries to grab this lock until it either succeeds or the end of time.
-void lock(volatile int *mutex) {
-	while(try(mutex) != 0);		// spin
+int lock(volatile int *mutex) {
+	int spin = 0;
+	while(try(mutex) != 0) {
+		spin++;
+		shed_yield();
+	}
+	return spin;
 }
 
 void unlock(volatile int *mutex) {
@@ -59,7 +64,7 @@ int main(int argc, char *argv[]) {
 	two_args.inc = inc;
 
 	one_args.id = 0;
-	one_args.id = 1;
+	two_args.id = 1;
 
 	pthread_create(&one_p, NULL, increment, &one_args);
 	pthread_create(&two_p, NULL, increment, &two_args);
