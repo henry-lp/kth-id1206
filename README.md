@@ -24,7 +24,7 @@
 
 ### File systems
 
-- [ ] Secondary storage: Storage - take your time
+- [x] Secondary storage: Storage - take your time
 - [ ] File operations. Exploring the file system
 
 
