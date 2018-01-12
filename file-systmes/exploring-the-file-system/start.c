@@ -7,20 +7,19 @@
 #include <time.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <string.h>
 
-int main(int argc, char *argv[]) {
-	if(argc < 2) {
-		perror("usage: myls <dir>\n");
-		return -1;
-	}
+unsigned long  count(char *path) {
 
-	char *path = argv[1];
+	unsigned long total = 0;
 
-	DIR *dirp = opendir(path);
+	DIR * dirp = opendir(path);
+
+	char subdir[1024];
 
 	struct dirent *entry;
+
 	struct stat file_st;
-	fstatat(dirfd(dirp), entry -> d_name, &file_st, 0);
 
 	while((entry = readdir(dirp)) != NULL) {
 		switch(entry -> d_type) {
@@ -32,6 +31,8 @@ int main(int argc, char *argv[]) {
 				break;
 			case DT_DIR :		// This is a directory
 				printf("d:");
+				sprintf(subdir, "%s/%s", path, entry -> d_name);
+				total += count(subdir);
 				break;
 			case DT_FIFO :		// This is a named pipe
 				printf("p:");
@@ -41,6 +42,7 @@ int main(int argc, char *argv[]) {
 				break;
 			case DT_REG :		// This is a regular file
 				printf("f:");
+				total++;
 				break;
 			case DT_SOCK : 		// This is a UNIX domain socket
 				printf("s:");
@@ -48,11 +50,27 @@ int main(int argc, char *argv[]) {
 			case DT_UNKNOWN :	// The file type is unknown
 				printf("u:");
 				break;
-			}
-		printf("\tinode %lu", entry -> d_ino);
-		printf("\tdev: 0x%lx", file_st.st_dev);
-		printf("\tinode %lu", entry -> d_ino);
-		printf("\tsize: %lu", file_st.st_size);
-		printf("\tname: %s\n", entry -> d_name);
+			default :
+				break;
+		}
 	}
+
+	if((strcmp(entry−>d_name , ”.”) == 0) | (strcmp (entry−>d_name , ”..” ) == 0)) {
+		break;
+	}
+
+	closedir(dirp);
+	return total;
+}
+
+
+int main(int argc, char *argv[]) {
+	if(argc <2) {
+		perror("usage: total <dir>\n");
+		return -1;
+	}
+
+	char *path = argv[1];
+	unsigned long total == count(path);
+	printf("The directory %s contains %lu files\n", path, total);
 }
