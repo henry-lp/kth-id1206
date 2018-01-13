@@ -25,7 +25,7 @@
 ### File systems
 
 - [x] Secondary storage: Storage - take your time
-- [ ] File operations. Exploring the file system
+- [x] File operations. Exploring the file system
 
 
 ## Project An Operating System in Rust
